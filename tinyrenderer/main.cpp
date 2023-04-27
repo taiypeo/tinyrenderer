@@ -5,13 +5,44 @@
 
 const sf::Color WHITE(255, 255, 255), RED(255, 0, 0);
 
-void draw_line(sf::Image &img, int x0, int y0, int x1, int y1, const sf::Color color)
+void draw_line(sf::Image &img, int x0, int y0, int x1, int y1, const sf::Color &color)
 {
-    for (float t = 0.; t < 1.; t += .01)
+    if (x1 < x0)
     {
-        int x = x0 * (1. - t) + x1 * t;
-        int y = y0 * (1. - t) + y1 * t;
-        img.setPixel(x, y, color);
+        std::swap(x0, x1);
+    }
+    if (y1 < y0)
+    {
+        std::swap(y0, y1);
+    }
+
+    bool transpose = false;
+    if (x1 - x0 < y1 - y0)
+    {
+        std::swap(x0, y0);
+        std::swap(x1, y1);
+        transpose = true;
+    }
+
+    const int dy = y1 - y0, dx = x1 - x0;
+    int two_error = 0, y = y0;
+    for (int x = x0; x <= x1; ++x)
+    {
+        if (transpose)
+        {
+            img.setPixel(y, x, color);
+        }
+        else
+        {
+            img.setPixel(x, y, color);
+        }
+
+        two_error += 2 * dy;
+        if (two_error > dx)
+        {
+            ++y;
+            two_error -= 2 * dx;
+        }
     }
 }
 
