@@ -1,52 +1,33 @@
+#include <algorithm>
+#include <cmath>
+
 #include <SFML/Graphics.hpp>
 
-void display_image(sf::RenderWindow &window, const sf::Image &img)
-{
-    sf::Texture texture;
-    texture.loadFromImage(img);
-
-    sf::Sprite sprite;
-    sprite.setTexture(texture, true);
-
-    window.draw(sprite);
-}
+const sf::Color WHITE(255, 255, 255), RED(255, 0, 0);
 
 void draw_line(sf::Image &img, int x0, int y0, int x1, int y1, const sf::Color color)
 {
-    for (float t = 0.; t < 1.; t += 0.01)
+    for (float t = 0.; t < 1.; t += .01)
     {
-        float x = x0 + t * (x1 - x0), y = y0 + t * (y1 - y0);
+        int x = x0 * (1. - t) + x1 * t;
+        int y = y0 * (1. - t) + y1 * t;
         img.setPixel(x, y, color);
     }
 }
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(640, 480), "TinyRenderer");
-    const auto size = window.getSize();
-    const double width = size.x, height = size.y;
+    const float width = 100, height = 100;
 
     sf::Image img;
+    img.create(width, height, sf::Color::Black);
 
-    while (window.isOpen())
-    {
-        sf::Event event;
-        if (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-            {
-                window.close();
-            }
-        }
+    draw_line(img, 13, 20, 80, 40, WHITE);
+    draw_line(img, 20, 13, 40, 80, RED);
+    draw_line(img, 80, 40, 13, 20, RED);
 
-        window.clear();
-
-        img.create(width, height, sf::Color::Black);
-        draw_line(img, 13, 20, 80, 40, sf::Color(255, 255, 255));
-        display_image(window, img);
-
-        window.display();
-    }
+    img.flipVertically();
+    img.saveToFile("result.png");
 
     return 0;
 }

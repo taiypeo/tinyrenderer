@@ -1,7 +1,7 @@
 # tinyrenderer
 A rendering demo made by following [ssloy's tutorial](https://github.com/ssloy/tinyrenderer).
 
-SFML is the only dependency, it is only used to display the software rendered image.
+SFML is the only dependency, it is only used to save the software-rendered image.
 
 ## Building
 1. Download SFML using your package manager. Example:
