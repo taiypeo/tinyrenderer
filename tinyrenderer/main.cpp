@@ -77,13 +77,20 @@ Vec3f barycentric_coords(
 void draw_triangle(
     sf::Image &img,
     std::vector<float> &zbuf,
+    const sf::Image &texture,
     Vec3f p0,
     Vec3f p1,
     Vec3f p2,
-    const sf::Color &color)
+    Vec3f p0_texture,
+    Vec3f p1_texture,
+    Vec3f p2_texture,
+    float illumination)
 {
     const auto size = img.getSize();
     const int width = size.x, height = size.y;
+
+    const auto texture_size = texture.getSize();
+    const int texture_width = texture_size.x, texture_height = texture_size.y;
 
     const int bbox_x0 = std::max(0.f, std::min({p0.x, p1.x, p2.x})),
               bbox_x1 = std::min(static_cast<float>(width) - 1, std::max({p0.x, p1.x, p2.x})),
@@ -102,6 +109,16 @@ void draw_triangle(
             }
 
             p.z = barycentric.x * p0.z + barycentric.y * p1.z + barycentric.z * p2.z;
+
+            float texture_x = barycentric.x * p0_texture.x + barycentric.y * p1_texture.x + barycentric.z * p2_texture.x,
+                  texture_y = barycentric.x * p0_texture.y + barycentric.y * p1_texture.y + barycentric.z * p2_texture.y;
+            texture_x *= texture_width;
+            texture_y *= texture_height;
+            sf::Color color = texture.getPixel(texture_x, texture_y);
+            color.r *= illumination;
+            color.g *= illumination;
+            color.b *= illumination;
+
             if (p.z > zbuf[y * width + x])
             {
                 zbuf[y * width + x] = p.z;
@@ -133,34 +150,42 @@ void draw_filled_head()
     img.create(width, height, sf::Color::Black);
 
     Model model("model/head.obj");
+    sf::Image texture_img;
+    texture_img.loadFromFile("model/texture.png");
+    texture_img.flipVertically();
 
     for (size_t i = 0; i < model.nfaces(); ++i)
     {
         const std::vector<int> face = model.face(i);
+        const std::vector<int> texture = model.texture(i);
         Vec3f screen_coords[3];
         Vec3f world_coords[3];
+        Vec3f texture_coords[3];
         for (size_t j = 0; j < 3; ++j)
         {
             const Vec3f v = model.vert(face[j]);
             screen_coords[j] = world2screen(v, width, height);
             world_coords[j] = v;
+            texture_coords[j] = model.texture_coords(texture[j]);
         }
 
         const float illumination = get_illumination(
             light,
             world_coords[2] - world_coords[0],
             world_coords[1] - world_coords[0]);
-        const int color = 255 * illumination;
-
         if (illumination > 0.f)
         {
             draw_triangle(
                 img,
                 zbuf,
+                texture_img,
                 screen_coords[0],
                 screen_coords[1],
                 screen_coords[2],
-                sf::Color(color, color, color));
+                texture_coords[0],
+                texture_coords[1],
+                texture_coords[2],
+                illumination);
         }
     }
 
