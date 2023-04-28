@@ -95,6 +95,12 @@ void draw_triangle(sf::Image &img, Vec2i p0, Vec2i p1, Vec2i p2, const sf::Color
     }
 }
 
+float get_illumination(const Vec3f light, const Vec3f p0, const Vec3f p1)
+{
+    const Vec3f normal = p0 ^ p1;
+    return light * normal / (light.norm() * normal.norm());
+}
+
 void cmd_draw_head()
 {
     const float width = 800, height = 800;
@@ -126,6 +132,7 @@ void cmd_draw_head()
 void cmd_draw_filled_head()
 {
     const float width = 800, height = 800;
+    const Vec3f light(0, 0, -1);
 
     sf::Image img;
     img.create(width, height, sf::Color::Black);
@@ -136,20 +143,31 @@ void cmd_draw_filled_head()
     {
         const std::vector<int> face = model.face(i);
         Vec2i screen_coords[3];
+        Vec3f world_coords[3];
         for (size_t j = 0; j < 3; ++j)
         {
-            const Vec3f world_coords = model.vert(face[j]);
+            const Vec3f v = model.vert(face[j]);
             screen_coords[j] = Vec2i(
-                (world_coords.x + 1.) * width / 2.,
-                (world_coords.y + 1.) * height / 2.);
+                (v.x + 1.) * width / 2.,
+                (v.y + 1.) * height / 2.);
+            world_coords[j] = v;
         }
 
-        draw_triangle(
-            img,
-            screen_coords[0],
-            screen_coords[1],
-            screen_coords[2],
-            sf::Color(rand() % 255, rand() % 255, rand() % 255));
+        const float illumination = get_illumination(
+                        light,
+                        world_coords[2] - world_coords[0],
+                        world_coords[1] - world_coords[0]),
+                    color = 255. * illumination;
+
+        if (illumination > 0.f)
+        {
+            draw_triangle(
+                img,
+                screen_coords[0],
+                screen_coords[1],
+                screen_coords[2],
+                sf::Color(color, color, color));
+        }
     }
 
     img.flipVertically();
