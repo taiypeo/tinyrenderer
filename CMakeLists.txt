@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(
     SOURCES
     tinyrenderer/main.cpp
+    third-party/model.cpp
 )
 
 add_executable(tinyrenderer.out ${SOURCES})
