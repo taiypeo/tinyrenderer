@@ -117,40 +117,12 @@ float get_illumination(const Vec3f light, const Vec3f p0, const Vec3f p1)
     return light * normal / (light.norm() * normal.norm());
 }
 
-void cmd_draw_head()
-{
-    const float width = 800, height = 800;
-
-    sf::Image img;
-    img.create(width, height, sf::Color::Black);
-
-    Model model("obj/head.obj");
-
-    for (size_t i = 0; i < model.nfaces(); ++i)
-    {
-        const std::vector<int> face = model.face(i);
-        for (size_t j = 0; j < 3; ++j)
-        {
-            const Vec3f v0 = model.vert(face[j]), v1 = model.vert(face[(j + 1) % 3]);
-            const int x0 = (v0.x + 1.) * width / 2.,
-                      y0 = (v0.y + 1.) * height / 2.,
-                      x1 = (v1.x + 1.) * width / 2.,
-                      y1 = (v1.y + 1.) * height / 2.;
-
-            draw_line(img, x0, y0, x1, y1, WHITE);
-        }
-    }
-
-    img.flipVertically();
-    img.saveToFile("result.png");
-}
-
 Vec3f world2screen(const Vec3f v, int width, int height)
 {
     return Vec3f(int((v.x + 1.) * width / 2. + .5), int((v.y + 1.) * height / 2. + .5), v.z);
 }
 
-void cmd_draw_filled_head()
+void draw_filled_head()
 {
     const float width = 800, height = 800;
     const Vec3f light(0, 0, -1);
@@ -160,7 +132,7 @@ void cmd_draw_filled_head()
     sf::Image img;
     img.create(width, height, sf::Color::Black);
 
-    Model model("obj/head.obj");
+    Model model("model/head.obj");
 
     for (size_t i = 0; i < model.nfaces(); ++i)
     {
@@ -196,28 +168,8 @@ void cmd_draw_filled_head()
     img.saveToFile("result.png");
 }
 
-int main(int argc, char *argv[])
+int main()
 {
-    if (argc != 2)
-    {
-        std::cerr << "Usage: ./tinyrenderer COMMAND" << std::endl;
-        return 1;
-    }
-
-    const std::string command(argv[1]);
-    if (command == "head")
-    {
-        cmd_draw_head();
-    }
-    else if (command == "filled-head")
-    {
-        cmd_draw_filled_head();
-    }
-    else
-    {
-        std::cerr << "Unknown command" << std::endl;
-        return 1;
-    }
-
+    draw_filled_head();
     return 0;
 }
