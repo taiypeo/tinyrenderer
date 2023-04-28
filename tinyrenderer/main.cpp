@@ -154,10 +154,10 @@ void cmd_draw_filled_head()
         }
 
         const float illumination = get_illumination(
-                        light,
-                        world_coords[2] - world_coords[0],
-                        world_coords[1] - world_coords[0]),
-                    color = 255. * illumination;
+            light,
+            world_coords[2] - world_coords[0],
+            world_coords[1] - world_coords[0]);
+        const int color = 255 * illumination;
 
         if (illumination > 0.f)
         {
