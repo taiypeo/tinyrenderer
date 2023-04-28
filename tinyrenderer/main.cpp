@@ -15,11 +15,7 @@ int main()
 
     const Vec3f light(0, 0, -1);
 
-    Renderer renderer(
-        screen,
-        model,
-        texture,
-        light);
+    Renderer renderer(screen, model, texture, light);
     renderer.draw();
 
     screen.saveToFile("result.png");
