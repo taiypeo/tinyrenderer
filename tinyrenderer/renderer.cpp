@@ -32,17 +32,14 @@ float get_illumination(const Vec3f &light, const Vec3f &p0, const Vec3f &p1)
 Renderer::Renderer(
     sf::Image &screen_,
     Model &model_,
-    sf::Image &texture_,
     const Vec3f light_) : screen(screen_),
                           model(model_),
-                          texture(texture_),
                           screen_width(screen_.getSize().x),
                           screen_height(screen_.getSize().y),
-                          texture_width(texture_.getSize().x),
-                          texture_height(texture_.getSize().y),
+                          texture_width(model_.texture.getSize().x),
+                          texture_height(model_.texture.getSize().y),
                           light(light_)
 {
-    texture.flipVertically();
     zbuf = std::vector<std::vector<float>>(
         screen_width,
         std::vector<float>(screen_height, -std::numeric_limits<float>::max()));
@@ -70,7 +67,7 @@ void Renderer::draw_triangle(
             const float texture_x = texture_triangle.scale_barycentric(VectorComponent::X, barycentric) * texture_width,
                         texture_y = texture_triangle.scale_barycentric(VectorComponent::Y, barycentric) * texture_height;
 
-            sf::Color color = texture.getPixel(texture_x, texture_y);
+            sf::Color color = model.texture.getPixel(texture_x, texture_y);
             color.r *= illumination;
             color.g *= illumination;
             color.b *= illumination;

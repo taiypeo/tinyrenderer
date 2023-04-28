@@ -13,7 +13,7 @@
 class Renderer
 {
 private:
-    sf::Image &screen, &texture;
+    sf::Image &screen;
     std::vector<std::vector<float>> zbuf;
     Model &model;
     const int screen_width, screen_height, texture_width, texture_height;
@@ -30,7 +30,6 @@ public:
     Renderer(
         sf::Image &screen_,
         Model &model_,
-        sf::Image &texture_,
         const Vec3f light_);
 
     void draw();

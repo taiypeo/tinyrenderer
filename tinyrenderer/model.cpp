@@ -6,12 +6,19 @@
 
 #include "model.hpp"
 
-Model::Model(const std::string &filename)
+Model::Model(const std::string &model_filename, const std::string &texture_filename)
 {
-    std::ifstream file(filename);
+    if (!texture.loadFromFile(texture_filename))
+    {
+        throw std::runtime_error("Failed to load the texture");
+    }
+
+    texture.flipVertically();
+
+    std::ifstream file(model_filename);
     if (file.fail())
     {
-        throw std::runtime_error("Failed to read the model");
+        throw std::runtime_error("Failed to load the model");
     }
 
     std::vector<Vec3f> vertices, texture_coordinates;
