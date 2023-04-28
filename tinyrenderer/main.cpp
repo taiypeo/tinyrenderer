@@ -4,6 +4,8 @@
 #include <string>
 #include <stdexcept>
 #include <iostream>
+#include <vector>
+#include <limits>
 
 #include <SFML/Graphics.hpp>
 
@@ -51,12 +53,12 @@ void draw_line(sf::Image &img, int x0, int y0, int x1, int y1, const sf::Color &
 }
 
 Vec3f barycentric_coords(
-    const Vec2i &p,
-    const Vec2i &p0,
-    const Vec2i &p1,
-    const Vec2i &p2)
+    const Vec3f &p,
+    const Vec3f &p0,
+    const Vec3f &p1,
+    const Vec3f &p2)
 {
-    const Vec2i p10 = p1 - p0,
+    const Vec3f p10 = p1 - p0,
                 p20 = p2 - p0,
                 p0p = p0 - p;
 
@@ -72,25 +74,39 @@ Vec3f barycentric_coords(
         1 - (cross.x + cross.y) / cross.z, cross.x / cross.z, cross.y / cross.z);
 }
 
-void draw_triangle(sf::Image &img, Vec2i p0, Vec2i p1, Vec2i p2, const sf::Color &color)
+void draw_triangle(
+    sf::Image &img,
+    std::vector<float> &zbuf,
+    Vec3f p0,
+    Vec3f p1,
+    Vec3f p2,
+    const sf::Color &color)
 {
-    const int bbox_x0 = std::max(0, std::min({p0.x, p1.x, p2.x})),
-              bbox_x1 = std::min(static_cast<int>(img.getSize().x) - 1, std::max({p0.x, p1.x, p2.x})),
-              bbox_y0 = std::max(0, std::min({p0.y, p1.y, p2.y})),
-              bbox_y1 = std::min(static_cast<int>(img.getSize().y) - 1, std::max({p0.y, p1.y, p2.y}));
+    const auto size = img.getSize();
+    const int width = size.x, height = size.y;
+
+    const int bbox_x0 = std::max(0.f, std::min({p0.x, p1.x, p2.x})),
+              bbox_x1 = std::min(static_cast<float>(width) - 1, std::max({p0.x, p1.x, p2.x})),
+              bbox_y0 = std::max(0.f, std::min({p0.y, p1.y, p2.y})),
+              bbox_y1 = std::min(static_cast<float>(height) - 1, std::max({p0.y, p1.y, p2.y}));
 
     for (int x = bbox_x0; x <= bbox_x1; ++x)
     {
         for (int y = bbox_y0; y <= bbox_y1; ++y)
         {
-            const Vec2i p(x, y);
+            Vec3f p(x, y, 0.);
             const Vec3f barycentric = barycentric_coords(p, p0, p1, p2);
             if (barycentric.x < 0 || barycentric.y < 0 || barycentric.z < 0)
             {
                 continue;
             }
 
-            img.setPixel(x, y, color);
+            p.z = barycentric.x * p0.z + barycentric.y * p1.z + barycentric.z * p2.z;
+            if (p.z > zbuf[y * width + x])
+            {
+                zbuf[y * width + x] = p.z;
+                img.setPixel(x, y, color);
+            }
         }
     }
 }
@@ -129,10 +145,17 @@ void cmd_draw_head()
     img.saveToFile("result.png");
 }
 
+Vec3f world2screen(const Vec3f v, int width, int height)
+{
+    return Vec3f(int((v.x + 1.) * width / 2. + .5), int((v.y + 1.) * height / 2. + .5), v.z);
+}
+
 void cmd_draw_filled_head()
 {
     const float width = 800, height = 800;
     const Vec3f light(0, 0, -1);
+
+    std::vector<float> zbuf(width * height, -std::numeric_limits<float>::max());
 
     sf::Image img;
     img.create(width, height, sf::Color::Black);
@@ -142,14 +165,12 @@ void cmd_draw_filled_head()
     for (size_t i = 0; i < model.nfaces(); ++i)
     {
         const std::vector<int> face = model.face(i);
-        Vec2i screen_coords[3];
+        Vec3f screen_coords[3];
         Vec3f world_coords[3];
         for (size_t j = 0; j < 3; ++j)
         {
             const Vec3f v = model.vert(face[j]);
-            screen_coords[j] = Vec2i(
-                (v.x + 1.) * width / 2.,
-                (v.y + 1.) * height / 2.);
+            screen_coords[j] = world2screen(v, width, height);
             world_coords[j] = v;
         }
 
@@ -163,31 +184,13 @@ void cmd_draw_filled_head()
         {
             draw_triangle(
                 img,
+                zbuf,
                 screen_coords[0],
                 screen_coords[1],
                 screen_coords[2],
                 sf::Color(color, color, color));
         }
     }
-
-    img.flipVertically();
-    img.saveToFile("result.png");
-}
-
-void cmd_draw_triangle()
-{
-    const float width = 200, height = 200;
-
-    sf::Image img;
-    img.create(width, height, sf::Color::Black);
-
-    Vec2i p0[3] = {Vec2i(10, 70), Vec2i(50, 160), Vec2i(70, 80)};
-    Vec2i p1[3] = {Vec2i(180, 50), Vec2i(150, 1), Vec2i(70, 180)};
-    Vec2i p2[3] = {Vec2i(180, 150), Vec2i(120, 160), Vec2i(130, 180)};
-
-    draw_triangle(img, p0[0], p0[1], p0[2], RED);
-    draw_triangle(img, p1[0], p1[1], p1[2], WHITE);
-    draw_triangle(img, p2[0], p2[1], p2[2], GREEN);
 
     img.flipVertically();
     img.saveToFile("result.png");
@@ -209,10 +212,6 @@ int main(int argc, char *argv[])
     else if (command == "filled-head")
     {
         cmd_draw_filled_head();
-    }
-    else if (command == "triangle")
-    {
-        cmd_draw_triangle();
     }
     else
     {
