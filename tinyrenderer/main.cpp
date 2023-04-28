@@ -1,6 +1,6 @@
 #include <SFML/Graphics.hpp>
 
-#include "../third-party/model.h"
+#include "model.hpp"
 #include "renderer.hpp"
 
 int main()

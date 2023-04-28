@@ -8,7 +8,8 @@ set(
     SOURCES
     tinyrenderer/main.cpp
     tinyrenderer/renderer.cpp
-    third-party/model.cpp
+    tinyrenderer/model.cpp
+    tinyrenderer/triangle.cpp
 )
 
 add_executable(tinyrenderer.out ${SOURCES})
