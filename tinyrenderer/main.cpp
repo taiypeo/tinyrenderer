@@ -16,7 +16,7 @@ int main()
     screen.create(screen_width, screen_height, sf::Color::Black);
 
     Model model(
-        "model/head.obj",
+        "model/model.obj",
         "model/normal_map.png",
         "model/specular_map.png",
         "model/diffuse_map.png");
