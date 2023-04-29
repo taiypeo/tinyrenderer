@@ -17,3 +17,5 @@ cmake . && make
 ```bash
 ./raycaster.out
 ```
+
+This will create a `result.png` image with the rendered scene.
