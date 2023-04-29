@@ -16,8 +16,9 @@ private:
     sf::Image &screen;
     std::vector<std::vector<float>> zbuf;
     Model &model;
-    const int screen_width, screen_height, texture_width, texture_height;
     const FloatVector light;
+    const int screen_width, screen_height, texture_width, texture_height;
+    const float camera_z;
 
     void draw_triangle(
         const Triangle &triangle,
@@ -30,6 +31,7 @@ public:
     Renderer(
         sf::Image &screen,
         Model &model,
+        float camera_z,
         const FloatVector light);
 
     void draw();

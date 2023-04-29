@@ -13,7 +13,7 @@ int main()
 
     const FloatVector light(0.f, 0.f, -1.f);
 
-    Renderer renderer(screen, model, light);
+    Renderer renderer(screen, model, 3.f, light);
     renderer.draw();
 
     screen.saveToFile("result.png");

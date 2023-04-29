@@ -32,13 +32,15 @@ float get_illumination(const FloatVector &light, const FloatVector &p0, const Fl
 Renderer::Renderer(
     sf::Image &screen,
     Model &model,
+    float camera_z,
     const FloatVector light) : screen(screen),
                                model(model),
                                screen_width(screen.getSize().x),
                                screen_height(screen.getSize().y),
                                texture_width(model.texture.getSize().x),
                                texture_height(model.texture.getSize().y),
-                               light(light)
+                               light(light),
+                               camera_z(camera_z)
 {
     zbuf = std::vector<std::vector<float>>(
         screen_width,
@@ -127,16 +129,34 @@ FloatVector Renderer::world_to_screen(const FloatVector &vec)
         vec.z);
 }
 
+Matrix viewport(int x, int y, int w, int h)
+{
+    Matrix m = Matrix::identity(4);
+    m[0][3] = x + w / 2.f;
+    m[1][3] = y + h / 2.f;
+    m[2][3] = 255 / 2.f;
+
+    m[0][0] = w / 2.f;
+    m[1][1] = h / 2.f;
+    m[2][2] = 255 / 2.f;
+
+    return m;
+}
+
 void Renderer::draw()
 {
+    Matrix vp = viewport(screen_width / 8, screen_height / 8, screen_width * 3 / 4, screen_height * 3 / 4),
+           projection = Matrix::identity(4);
+    projection[3][2] = -1.f / camera_z;
+
     for (size_t i = 0; i < model.faces.size(); ++i)
     {
         const Triangle &world_coords = model.faces[i],
                        &texture_coords = model.textures[i],
                        screen_coords(
-                           world_to_screen(world_coords.p0),
-                           world_to_screen(world_coords.p1),
-                           world_to_screen(world_coords.p2));
+                           (vp * projection * Matrix(world_coords.p0)).to_vector(),
+                           (vp * projection * Matrix(world_coords.p1)).to_vector(),
+                           (vp * projection * Matrix(world_coords.p2)).to_vector());
 
         const float illumination = get_illumination(
             light,

@@ -17,7 +17,7 @@ Matrix::Matrix(const FloatVector &vec) : Matrix(VectorComponent::W + 1, 1)
 
 Matrix Matrix::operator*(const Matrix &other) const
 {
-    if (n_cols() != other.n_cols())
+    if (n_cols() != other.n_rows())
     {
         throw std::runtime_error("Matrix dimensions are incompatible for multiplication");
     }
@@ -95,7 +95,7 @@ FloatVector Matrix::to_vector() const
     }
 
     FloatVector result;
-    for (size_t i = VectorComponent::X; i <= VectorComponent::W; ++i)
+    for (size_t i = VectorComponent::X; i <= VectorComponent::Z; ++i)
     {
         result[i] = mat[i][0] / mat[VectorComponent::W][0];
     }
