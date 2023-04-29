@@ -85,6 +85,12 @@ struct Vector
             throw std::runtime_error("Invalid vector component index");
         }
     }
+
+    Vector<T> normalize() const
+    {
+        const T vec_norm = norm();
+        return Vector<T>(x / vec_norm, y / vec_norm, z / vec_norm);
+    }
 };
 
 using IntVector = Vector<int>;
@@ -108,6 +114,9 @@ public:
     FloatVector to_vector() const;
 
     static Matrix identity(size_t size);
+    static Matrix look_at(const FloatVector &eye, const FloatVector &center, const FloatVector up);
+    static Matrix viewport(int corner_x, int corner_y, int width, int height);
+    static Matrix projection(float camera_z);
 };
 
 #endif

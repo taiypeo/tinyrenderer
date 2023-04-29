@@ -121,34 +121,19 @@ void Renderer::draw_line(int x0, int y0, int x1, int y1, const sf::Color &color)
     }
 }
 
-Matrix viewport(int x, int y, int w, int h)
-{
-    Matrix m = Matrix::identity(4);
-    m[0][3] = x + w / 2.f;
-    m[1][3] = y + h / 2.f;
-    m[2][3] = 255 / 2.f;
-
-    m[0][0] = w / 2.f;
-    m[1][1] = h / 2.f;
-    m[2][2] = 255 / 2.f;
-
-    return m;
-}
-
 void Renderer::draw()
 {
-    Matrix vp = viewport(screen_width / 8, screen_height / 8, screen_width * 3 / 4, screen_height * 3 / 4),
-           projection = Matrix::identity(4);
-    projection[3][2] = -1.f / camera_z;
+    Matrix vp = Matrix::viewport(screen_width / 8, screen_height / 8, screen_width * 3 / 4, screen_height * 3 / 4),
+           proj = Matrix::projection(camera_z);
 
     for (size_t i = 0; i < model.faces.size(); ++i)
     {
         const Triangle &world_coords = model.faces[i],
                        &texture_coords = model.textures[i],
                        screen_coords(
-                           (vp * projection * Matrix(world_coords.p0)).to_vector(),
-                           (vp * projection * Matrix(world_coords.p1)).to_vector(),
-                           (vp * projection * Matrix(world_coords.p2)).to_vector());
+                           (vp * proj * Matrix(world_coords.p0)).to_vector(),
+                           (vp * proj * Matrix(world_coords.p1)).to_vector(),
+                           (vp * proj * Matrix(world_coords.p2)).to_vector());
 
         const float illumination = get_illumination(
             light,

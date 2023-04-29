@@ -76,17 +76,6 @@ size_t Matrix::n_cols() const
     return mat[0].size();
 }
 
-Matrix Matrix::identity(size_t size)
-{
-    Matrix result(size, size);
-    for (size_t i = 0; i < size; ++i)
-    {
-        result[i][i] = 1.f;
-    }
-
-    return result;
-}
-
 FloatVector Matrix::to_vector() const
 {
     if (n_cols() != 1 || n_rows() != VectorComponent::W + 1)
@@ -101,4 +90,59 @@ FloatVector Matrix::to_vector() const
     }
 
     return result;
+}
+
+Matrix Matrix::identity(size_t size)
+{
+    Matrix result(size, size);
+    for (size_t i = 0; i < size; ++i)
+    {
+        result[i][i] = 1.f;
+    }
+
+    return result;
+}
+
+Matrix Matrix::look_at(const FloatVector &eye, const FloatVector &center, const FloatVector up)
+{
+    const FloatVector z = (eye - center).normalize(),
+                      x = (up ^ z).normalize(),
+                      y = (x ^ z).normalize();
+
+    // Change of basis matrix M is orthogonal, therefore M^{-1} = M^T
+    Matrix Minv = Matrix::identity(4), translate = Matrix::identity(4);
+    for (size_t i = 0; i < 3; ++i)
+    {
+        Minv[0][i] = x.at(i);
+        Minv[1][i] = y.at(i);
+        Minv[2][i] = z.at(i);
+
+        translate[i][3] = -eye.at(i);
+    }
+
+    return Minv * translate;
+}
+
+Matrix Matrix::viewport(int corner_x, int corner_y, int width, int height)
+{
+    Matrix vp = Matrix::identity(4);
+
+    // Scaling
+    vp[0][0] = width / 2.f;
+    vp[1][1] = height / 2.f;
+    vp[2][2] = 255 / 2.f;
+
+    // Translation
+    vp[0][3] = corner_x + width / 2.f;
+    vp[1][3] = corner_y + height / 2.f;
+    vp[2][3] = 255 / 2.f;
+
+    return vp;
+}
+
+Matrix Matrix::projection(float camera_z)
+{
+    Matrix proj = Matrix::identity(4);
+    proj[3][2] = -1.f / camera_z;
+    return proj;
 }
