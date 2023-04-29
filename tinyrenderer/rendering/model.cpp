@@ -4,8 +4,8 @@
 #include <stdexcept>
 #include <string>
 
-#include "model.hpp"
-#include "linalg.hpp"
+#include "rendering/model.hpp"
+#include "math/linalg.hpp"
 
 Model::Model(const std::string &model_filename, const std::string &texture_filename)
 {

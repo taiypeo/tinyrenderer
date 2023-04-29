@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <stdexcept>
 
-#include "triangle.hpp"
+#include "math/triangle.hpp"
 
 Triangle::Triangle() {}
 

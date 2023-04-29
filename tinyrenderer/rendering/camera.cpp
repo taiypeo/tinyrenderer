@@ -1,4 +1,4 @@
-#include "camera.hpp"
+#include "rendering/camera.hpp"
 
 Camera::Camera(
     const FloatVector &eye,

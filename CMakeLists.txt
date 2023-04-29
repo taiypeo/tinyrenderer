@@ -7,12 +7,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(
     SOURCES
     tinyrenderer/main.cpp
-    tinyrenderer/renderer.cpp
-    tinyrenderer/model.cpp
-    tinyrenderer/triangle.cpp
-    tinyrenderer/linalg.cpp
-    tinyrenderer/camera.cpp
+    tinyrenderer/rendering/renderer.cpp
+    tinyrenderer/rendering/model.cpp
+    tinyrenderer/rendering/camera.cpp
+    tinyrenderer/math/triangle.cpp
+    tinyrenderer/math/linalg.cpp
 )
 
+include_directories(tinyrenderer)
 add_executable(tinyrenderer.out ${SOURCES})
 target_link_libraries(tinyrenderer.out -lsfml-graphics -lsfml-window -lsfml-system)

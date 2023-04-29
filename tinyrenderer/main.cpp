@@ -1,9 +1,9 @@
 #include <SFML/Graphics.hpp>
 
-#include "camera.hpp"
-#include "model.hpp"
-#include "renderer.hpp"
-#include "linalg.hpp"
+#include "rendering/camera.hpp"
+#include "rendering/model.hpp"
+#include "rendering/renderer.hpp"
+#include "math/linalg.hpp"
 
 int main()
 {

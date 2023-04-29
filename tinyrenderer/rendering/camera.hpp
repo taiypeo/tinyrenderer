@@ -1,7 +1,7 @@
 #ifndef __CAMERA_HPP__
 #define __CAMERA_HPP__
 
-#include "linalg.hpp"
+#include "math/linalg.hpp"
 
 struct Camera
 {

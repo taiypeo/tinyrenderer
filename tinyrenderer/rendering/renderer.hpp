@@ -6,10 +6,10 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "camera.hpp"
-#include "triangle.hpp"
-#include "model.hpp"
-#include "linalg.hpp"
+#include "rendering/camera.hpp"
+#include "math/triangle.hpp"
+#include "rendering/model.hpp"
+#include "math/linalg.hpp"
 
 class Renderer
 {

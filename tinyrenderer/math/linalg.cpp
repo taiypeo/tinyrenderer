@@ -1,4 +1,4 @@
-#include "linalg.hpp"
+#include "math/linalg.hpp"
 
 Matrix::Matrix(size_t rows, size_t cols)
 {

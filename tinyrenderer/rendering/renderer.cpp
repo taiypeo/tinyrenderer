@@ -3,7 +3,7 @@
 #include <limits>
 #include <stdexcept>
 
-#include "renderer.hpp"
+#include "rendering/renderer.hpp"
 
 FloatVector barycentric_coords(const FloatVector &p, const Triangle &triangle)
 {

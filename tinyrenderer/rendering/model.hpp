@@ -5,7 +5,7 @@
 
 #include <vector>
 
-#include "triangle.hpp"
+#include "math/triangle.hpp"
 
 struct Model
 {
