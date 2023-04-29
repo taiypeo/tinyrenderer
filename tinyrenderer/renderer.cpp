@@ -30,15 +30,15 @@ float get_illumination(const FloatVector &light, const FloatVector &p0, const Fl
 }
 
 Renderer::Renderer(
-    sf::Image &screen_,
-    Model &model_,
-    const FloatVector light_) : screen(screen_),
-                                model(model_),
-                                screen_width(screen_.getSize().x),
-                                screen_height(screen_.getSize().y),
-                                texture_width(model_.texture.getSize().x),
-                                texture_height(model_.texture.getSize().y),
-                                light(light_)
+    sf::Image &screen,
+    Model &model,
+    const FloatVector light) : screen(screen),
+                               model(model),
+                               screen_width(screen.getSize().x),
+                               screen_height(screen.getSize().y),
+                               texture_width(model.texture.getSize().x),
+                               texture_height(model.texture.getSize().y),
+                               light(light)
 {
     zbuf = std::vector<std::vector<float>>(
         screen_width,

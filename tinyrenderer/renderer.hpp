@@ -28,9 +28,9 @@ private:
 
 public:
     Renderer(
-        sf::Image &screen_,
-        Model &model_,
-        const FloatVector light_);
+        sf::Image &screen,
+        Model &model,
+        const FloatVector light);
 
     void draw();
 };
