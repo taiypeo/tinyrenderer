@@ -107,7 +107,7 @@ Matrix Matrix::look_at(const FloatVector &eye, const FloatVector &center, const 
 {
     const FloatVector z = (eye - center).normalize(),
                       x = (up ^ z).normalize(),
-                      y = (x ^ z).normalize();
+                      y = (z ^ x).normalize();
 
     // Change of basis matrix M is orthogonal, therefore M^{-1} = M^T
     Matrix Minv = Matrix::identity(4), translate = Matrix::identity(4);

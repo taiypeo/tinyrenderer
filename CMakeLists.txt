@@ -11,6 +11,7 @@ set(
     tinyrenderer/model.cpp
     tinyrenderer/triangle.cpp
     tinyrenderer/linalg.cpp
+    tinyrenderer/camera.cpp
 )
 
 add_executable(tinyrenderer.out ${SOURCES})

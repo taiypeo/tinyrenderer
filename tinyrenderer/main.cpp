@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 
+#include "camera.hpp"
 #include "model.hpp"
 #include "renderer.hpp"
 #include "linalg.hpp"
@@ -11,9 +12,12 @@ int main()
 
     Model model("model/head.obj", "model/texture.png");
 
-    const FloatVector light(0.f, 0.f, -1.f);
+    Camera camera(
+        FloatVector(1.f, 1.f, 3.f),
+        FloatVector(0.f, 0.f, 0.f),
+        FloatVector(0.f, 1.f, 0.f));
 
-    Renderer renderer(screen, model, 3.f, light);
+    Renderer renderer(screen, model, camera, FloatVector(1.f, -1.f, -1.f));
     renderer.draw();
 
     screen.saveToFile("result.png");

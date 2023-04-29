@@ -32,7 +32,7 @@ float get_illumination(const FloatVector &light, const FloatVector &p0, const Fl
 Renderer::Renderer(
     sf::Image &screen,
     Model &model,
-    float camera_z,
+    const Camera &camera,
     const FloatVector light) : screen(screen),
                                model(model),
                                screen_width(screen.getSize().x),
@@ -40,7 +40,7 @@ Renderer::Renderer(
                                texture_width(model.texture.getSize().x),
                                texture_height(model.texture.getSize().y),
                                light(light),
-                               camera_z(camera_z)
+                               camera(camera)
 {
     zbuf = std::vector<std::vector<float>>(
         screen_width,
@@ -66,13 +66,17 @@ void Renderer::draw_triangle(
 
             pixel.z = triangle.scale_barycentric(VectorComponent::Z, barycentric);
 
-            const float texture_x = texture_triangle.scale_barycentric(VectorComponent::X, barycentric) * texture_width,
-                        texture_y = texture_triangle.scale_barycentric(VectorComponent::Y, barycentric) * texture_height;
+            sf::Color color = sf::Color::Black;
+            if (illumination > 0.f)
+            {
+                const float texture_x = texture_triangle.scale_barycentric(VectorComponent::X, barycentric) * texture_width,
+                            texture_y = texture_triangle.scale_barycentric(VectorComponent::Y, barycentric) * texture_height;
 
-            sf::Color color = model.texture.getPixel(texture_x, texture_y);
-            color.r *= illumination;
-            color.g *= illumination;
-            color.b *= illumination;
+                color = model.texture.getPixel(texture_x, texture_y);
+                color.r *= illumination;
+                color.g *= illumination;
+                color.b *= illumination;
+            }
 
             if (pixel.z > zbuf[x][y])
             {
@@ -123,30 +127,30 @@ void Renderer::draw_line(int x0, int y0, int x1, int y1, const sf::Color &color)
 
 void Renderer::draw()
 {
-    Matrix vp = Matrix::viewport(screen_width / 8, screen_height / 8, screen_width * 3 / 4, screen_height * 3 / 4),
-           proj = Matrix::projection(camera_z);
+    const Matrix model_mat = Matrix::identity(4),
+                 view_mat = Matrix::look_at(camera.eye, camera.center, camera.up),
+                 proj_mat = Matrix::projection((camera.center - camera.eye).norm()),
+                 viewport_mat = Matrix::viewport(0, 0, screen_width, screen_height),
+                 transform_mat = viewport_mat * proj_mat * view_mat * model_mat;
 
     for (size_t i = 0; i < model.faces.size(); ++i)
     {
         const Triangle &world_coords = model.faces[i],
                        &texture_coords = model.textures[i],
                        screen_coords(
-                           (vp * proj * Matrix(world_coords.p0)).to_vector(),
-                           (vp * proj * Matrix(world_coords.p1)).to_vector(),
-                           (vp * proj * Matrix(world_coords.p2)).to_vector());
+                           (transform_mat * Matrix(world_coords.p0)).to_vector(),
+                           (transform_mat * Matrix(world_coords.p1)).to_vector(),
+                           (transform_mat * Matrix(world_coords.p2)).to_vector());
 
         const float illumination = get_illumination(
             light,
             world_coords.p2 - world_coords.p0,
             world_coords.p1 - world_coords.p0);
 
-        if (illumination > 0.f)
-        {
-            draw_triangle(
-                screen_coords,
-                texture_coords,
-                illumination);
-        }
+        draw_triangle(
+            screen_coords,
+            texture_coords,
+            illumination);
     }
 
     screen.flipVertically();
