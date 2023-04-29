@@ -7,6 +7,16 @@
 #include "rendering/model.hpp"
 #include "math/linalg.hpp"
 
+void load_image(sf::Image &image, const std::string &filename)
+{
+    if (!image.loadFromFile(filename))
+    {
+        throw std::runtime_error("Failed to load image");
+    }
+
+    image.flipVertically();
+}
+
 void read_vector(std::istringstream &iss, std::vector<FloatVector> &vectors)
 {
     FloatVector vec;
@@ -14,17 +24,23 @@ void read_vector(std::istringstream &iss, std::vector<FloatVector> &vectors)
     vectors.push_back(vec);
 }
 
-Model::Model(
-    const std::string &model_filename,
-    const std::string &texture_filename)
+void fill_triangle_vector(
+    const std::vector<IntVector> &indices,
+    const std::vector<FloatVector> &coordinates,
+    std::vector<Triangle> &target)
 {
-    if (!texture.loadFromFile(texture_filename))
+    for (const auto &idx : indices)
     {
-        throw std::runtime_error("Failed to load the texture");
+        target.emplace_back(coordinates[idx.x - 1], coordinates[idx.y - 1], coordinates[idx.z - 1]);
     }
+}
 
-    texture.flipVertically();
-
+void load_wavefront(
+    const std::string &model_filename,
+    std::vector<Triangle> &faces,
+    std::vector<Triangle> &textures,
+    std::vector<Triangle> &normals)
+{
     std::ifstream file(model_filename);
     if (file.fail())
     {
@@ -39,11 +55,7 @@ Model::Model(
     {
         std::getline(file, line);
         std::istringstream iss(line);
-
-        std::string line_type, str_discard;
-        char char_discard;
-        int int_discard;
-
+        std::string line_type;
         iss >> line_type;
         if (line_type == "v")
         {
@@ -59,6 +71,7 @@ Model::Model(
         }
         else if (line_type == "f")
         {
+            char char_discard;
             IntVector face, texture, normal;
             for (size_t component = VectorComponent::X; component <= VectorComponent::Z; ++component)
             {
@@ -71,24 +84,26 @@ Model::Model(
         }
     }
 
-    for (const auto &face : face_indices)
-    {
-        faces.emplace_back(vertices[face.x - 1], vertices[face.y - 1], vertices[face.z - 1]);
-    }
+    fill_triangle_vector(face_indices, vertices, faces);
+    fill_triangle_vector(texture_indices, texture_coordinates, textures);
+    fill_triangle_vector(normal_indices, normal_vectors, normals);
+}
 
-    for (const auto &texture_idx : texture_indices)
-    {
-        textures.emplace_back(
-            texture_coordinates[texture_idx.x - 1],
-            texture_coordinates[texture_idx.y - 1],
-            texture_coordinates[texture_idx.z - 1]);
-    }
+Model::Model(
+    const std::string &model_filename,
+    const std::string &texture_filename,
+    const std::string &normal_map_filename,
+    const std::string &specular_map_filename,
+    const std::string &diffuse_map_filename)
+{
+    load_image(texture, texture_filename);
+    load_image(normal_map, normal_map_filename);
+    load_image(specular_map, specular_map_filename);
+    load_image(diffuse_map, diffuse_map_filename);
 
-    for (const auto &normal_idx : normal_indices)
-    {
-        normals.emplace_back(
-            normal_vectors[normal_idx.x - 1],
-            normal_vectors[normal_idx.y - 1],
-            normal_vectors[normal_idx.z - 1]);
-    }
+    load_wavefront(
+        model_filename,
+        faces,
+        textures,
+        normals);
 }

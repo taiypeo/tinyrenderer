@@ -15,7 +15,12 @@ int main()
     sf::Image screen;
     screen.create(screen_width, screen_height, sf::Color::Black);
 
-    Model model("model/head.obj", "model/texture.png");
+    Model model(
+        "model/head.obj",
+        "model/texture.png",
+        "model/normal_map.png",
+        "model/specular_map.png",
+        "model/diffuse_map.png");
 
     const FloatVector eye(1.f, 1.f, 3.f),
         center(0.f, 0.f, 0.f),
