@@ -3,7 +3,7 @@
 
 #include <utility>
 
-#include "vector.hpp"
+#include "linalg.hpp"
 
 struct Triangle
 {

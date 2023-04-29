@@ -2,7 +2,7 @@
 
 #include "model.hpp"
 #include "renderer.hpp"
-#include "vector.hpp"
+#include "linalg.hpp"
 
 int main()
 {

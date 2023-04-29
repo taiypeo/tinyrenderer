@@ -5,7 +5,7 @@
 #include <string>
 
 #include "model.hpp"
-#include "vector.hpp"
+#include "linalg.hpp"
 
 Model::Model(const std::string &model_filename, const std::string &texture_filename)
 {

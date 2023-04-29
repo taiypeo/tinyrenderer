@@ -8,7 +8,7 @@
 
 #include "triangle.hpp"
 #include "model.hpp"
-#include "vector.hpp"
+#include "linalg.hpp"
 
 class Renderer
 {
