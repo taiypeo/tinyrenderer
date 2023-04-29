@@ -4,8 +4,8 @@
 #include <stdexcept>
 #include <string>
 
-#include "rendering/model.hpp"
 #include "math/linalg.hpp"
+#include "rendering/model.hpp"
 
 void load_image(sf::Image &image, const std::string &filename)
 {

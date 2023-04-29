@@ -109,6 +109,7 @@ public:
     std::vector<float> &operator[](size_t idx);
     const std::vector<float> &at(size_t idx) const;
     Matrix T() const;
+    Matrix inv() const;
     size_t n_rows() const;
     size_t n_cols() const;
     FloatVector to_vector() const;

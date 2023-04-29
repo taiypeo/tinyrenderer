@@ -1,8 +1,7 @@
 #include <algorithm>
 
-#include "shader.hpp"
-
 #include "math/triangle.hpp"
+#include "rendering/shader.hpp"
 
 Shader::Shader(
     const Model &model,
@@ -10,6 +9,10 @@ Shader::Shader(
     const Matrix &view_mat,
     const Matrix &proj_mat,
     const Matrix &viewport_mat) : model(model),
+                                  model_mat(model_mat),
+                                  view_mat(view_mat),
+                                  proj_mat(proj_mat),
+                                  viewport_mat(viewport_mat),
                                   transformation_mat(viewport_mat * proj_mat * view_mat * model_mat) {}
 
 SimpleShader::SimpleShader(
@@ -72,6 +75,42 @@ bool GouraudShader::fragment(const FloatVector &barycentric, sf::Color &color)
                 texture_y = texture_triangle.scale_barycentric(VectorComponent::Y, barycentric) * texture_height;
 
     color = model.diffuse_map.getPixel(texture_x, texture_y);
+    color.r *= illumination;
+    color.g *= illumination;
+    color.b *= illumination;
+
+    return false;
+}
+
+NormalShader::NormalShader(
+    const Model &model,
+    const Matrix &model_mat,
+    const Matrix &view_mat,
+    const Matrix &proj_mat,
+    const Matrix &viewport_mat,
+    const FloatVector &light) : SimpleShader(model, model_mat, view_mat, proj_mat, viewport_mat, light),
+                                before_viewport(proj_mat * view_mat * model_mat),
+                                before_viewport_tinv(before_viewport.T().inv()) {}
+
+FloatVector NormalShader::vertex(size_t face_idx, size_t vertex_idx)
+{
+    const Triangle face = model.faces[face_idx];
+    texture_triangle = model.textures[face_idx];
+    return (transformation_mat * Matrix(face.at(vertex_idx))).to_vector();
+}
+
+bool NormalShader::fragment(const FloatVector &barycentric, sf::Color &color)
+{
+    const float texture_x = texture_triangle.scale_barycentric(VectorComponent::X, barycentric) * texture_width,
+                texture_y = texture_triangle.scale_barycentric(VectorComponent::Y, barycentric) * texture_height;
+
+    color = model.diffuse_map.getPixel(texture_x, texture_y);
+
+    const FloatVector normal = model.get_normal(texture_x, texture_y),
+                      transformed_normal = (before_viewport_tinv * Matrix(normal)).to_vector().normalize(),
+                      transformed_light = (before_viewport * Matrix(light)).to_vector().normalize();
+
+    const float illumination = std::abs(transformed_normal * transformed_light);
     color.r *= illumination;
     color.g *= illumination;
     color.b *= illumination;

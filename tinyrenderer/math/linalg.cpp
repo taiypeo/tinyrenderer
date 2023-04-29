@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "math/linalg.hpp"
 
 Matrix::Matrix(size_t rows, size_t cols) : mat(rows, std::vector<float>(cols, 0.f)) {}
@@ -57,6 +59,63 @@ Matrix Matrix::T() const
         for (size_t j = 0; j < n_cols(); ++j)
         {
             result[i][j] = mat[j][i];
+        }
+    }
+
+    return result;
+}
+
+Matrix Matrix::inv() const
+{
+    Matrix gaussian(n_rows(), n_cols() * 2);
+    for (size_t i = 0; i < n_rows(); ++i)
+    {
+        gaussian[i][n_cols() + i] = 1.f;
+        for (size_t j = 0; j < n_cols(); ++j)
+        {
+            gaussian[i][j] = mat[i][j];
+        }
+    }
+
+    size_t pivot_row = 0, pivot_col = 0;
+    while (pivot_row < n_rows() && pivot_col < n_cols())
+    {
+        size_t max_row = pivot_row;
+        for (size_t i = pivot_row; i < n_rows(); ++i)
+        {
+            if (gaussian[i][pivot_col] > gaussian[max_row][pivot_col])
+            {
+                max_row = i;
+            }
+        }
+
+        if (gaussian[max_row][pivot_col] == 0.f)
+        {
+            ++pivot_col;
+            continue;
+        }
+
+        std::swap(gaussian[pivot_row], gaussian[max_row]);
+        for (size_t i = pivot_row + 1; i < n_rows(); ++i)
+        {
+            const float ratio = gaussian[i][pivot_col] / gaussian[pivot_row][pivot_col];
+            gaussian[i][pivot_col] = 0.f;
+            for (size_t j = pivot_col + 1; j < n_cols(); ++j)
+            {
+                gaussian[i][j] -= gaussian[pivot_row][j] * ratio;
+            }
+        }
+
+        ++pivot_row;
+        ++pivot_col;
+    }
+
+    Matrix result(n_rows(), n_cols());
+    for (size_t i = 0; i < n_rows(); ++i)
+    {
+        for (size_t j = 0; j < n_cols(); ++j)
+        {
+            result[i][j] = gaussian[i][n_cols() + j];
         }
     }
 

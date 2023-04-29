@@ -31,7 +31,7 @@ int main()
                  proj_mat = Matrix::projection((center - eye).norm()),
                  viewport_mat = Matrix::viewport(0, 0, screen_width, screen_height);
 
-    GouraudShader shader(model, model_mat, view_mat, proj_mat, viewport_mat, light);
+    NormalShader shader(model, model_mat, view_mat, proj_mat, viewport_mat, light);
 
     std::vector<std::vector<float>> zbuf(
         screen_width,

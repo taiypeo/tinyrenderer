@@ -10,7 +10,7 @@ class Shader
 {
 protected:
     const Model &model;
-    const Matrix transformation_mat;
+    const Matrix model_mat, view_mat, proj_mat, viewport_mat, transformation_mat;
 
 public:
     Shader(
@@ -20,7 +20,7 @@ public:
         const Matrix &proj_mat,
         const Matrix &viewport_mat);
 
-    virtual FloatVector vertex(size_t face, size_t vert) = 0;
+    virtual FloatVector vertex(size_t face_idx, size_t vertex_idx) = 0;
     virtual bool fragment(const FloatVector &barycentric, sf::Color &color) = 0;
 };
 
@@ -44,7 +44,7 @@ public:
         const Matrix &viewport_mat,
         const FloatVector &light);
 
-    virtual FloatVector vertex(size_t face, size_t vert);
+    virtual FloatVector vertex(size_t face_idx, size_t vertex_idx);
     virtual bool fragment(const FloatVector &barycentric, sf::Color &color);
 };
 
@@ -56,7 +56,25 @@ private:
 public:
     using SimpleShader::SimpleShader;
 
-    FloatVector vertex(size_t face, size_t vert);
+    FloatVector vertex(size_t face_idx, size_t vertex_idx);
+    bool fragment(const FloatVector &barycentric, sf::Color &color);
+};
+
+class NormalShader : public SimpleShader
+{
+private:
+    Matrix before_viewport, before_viewport_tinv;
+
+public:
+    NormalShader(
+        const Model &model,
+        const Matrix &model_mat,
+        const Matrix &view_mat,
+        const Matrix &proj_mat,
+        const Matrix &viewport_mat,
+        const FloatVector &light);
+
+    FloatVector vertex(size_t face_idx, size_t vertex_idx);
     bool fragment(const FloatVector &barycentric, sf::Color &color);
 };
 
