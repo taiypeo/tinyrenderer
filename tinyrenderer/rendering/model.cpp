@@ -105,3 +105,12 @@ Model::Model(
         textures,
         normals);
 }
+
+FloatVector Model::get_normal(size_t pixel_x, size_t pixel_y) const
+{
+    const sf::Color color = normal_map.getPixel(pixel_x, pixel_y);
+    return FloatVector(
+        color.r / 255.f * 2.f - 1.f,
+        color.g / 255.f * 2.f - 1.f,
+        color.b / 255.f * 2.f - 1.f);
+}

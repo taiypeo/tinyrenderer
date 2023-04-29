@@ -17,6 +17,8 @@ struct Model
         const std::string &normal_map_filename,
         const std::string &specular_map_filename,
         const std::string &diffuse_map_filename);
+
+    FloatVector get_normal(size_t pixel_x, size_t pixel_y) const;
 };
 
 #endif

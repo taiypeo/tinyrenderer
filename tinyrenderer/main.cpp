@@ -10,7 +10,7 @@
 
 int main()
 {
-    const int screen_width = 800, screen_height = 800;
+    const int screen_width = 1600, screen_height = 1600;
 
     sf::Image screen;
     screen.create(screen_width, screen_height, sf::Color::Black);
