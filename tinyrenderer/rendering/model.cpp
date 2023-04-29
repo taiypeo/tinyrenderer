@@ -91,12 +91,10 @@ void load_wavefront(
 
 Model::Model(
     const std::string &model_filename,
-    const std::string &texture_filename,
     const std::string &normal_map_filename,
     const std::string &specular_map_filename,
     const std::string &diffuse_map_filename)
 {
-    load_image(texture, texture_filename);
     load_image(normal_map, normal_map_filename);
     load_image(specular_map, specular_map_filename);
     load_image(diffuse_map, diffuse_map_filename);

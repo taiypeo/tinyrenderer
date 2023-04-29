@@ -20,8 +20,8 @@ SimpleShader::SimpleShader(
     const Matrix &viewport_mat,
     const FloatVector &light) : Shader(model, model_mat, view_mat, proj_mat, viewport_mat),
                                 light(light),
-                                texture_width(model.texture.getSize().x),
-                                texture_height(model.texture.getSize().y) {}
+                                texture_width(model.diffuse_map.getSize().x),
+                                texture_height(model.diffuse_map.getSize().y) {}
 
 FloatVector SimpleShader::vertex(size_t face_idx, size_t vertex_idx)
 {
@@ -46,7 +46,7 @@ bool SimpleShader::fragment(const FloatVector &barycentric, sf::Color &color)
     const float texture_x = texture_triangle.scale_barycentric(VectorComponent::X, barycentric) * texture_width,
                 texture_y = texture_triangle.scale_barycentric(VectorComponent::Y, barycentric) * texture_height;
 
-    color = model.texture.getPixel(texture_x, texture_y);
+    color = model.diffuse_map.getPixel(texture_x, texture_y);
     color.r *= face_illumination;
     color.g *= face_illumination;
     color.b *= face_illumination;
@@ -71,7 +71,7 @@ bool GouraudShader::fragment(const FloatVector &barycentric, sf::Color &color)
     const float texture_x = texture_triangle.scale_barycentric(VectorComponent::X, barycentric) * texture_width,
                 texture_y = texture_triangle.scale_barycentric(VectorComponent::Y, barycentric) * texture_height;
 
-    color = model.texture.getPixel(texture_x, texture_y);
+    color = model.diffuse_map.getPixel(texture_x, texture_y);
     color.r *= illumination;
     color.g *= illumination;
     color.b *= illumination;

@@ -17,7 +17,6 @@ int main()
 
     Model model(
         "model/head.obj",
-        "model/texture.png",
         "model/normal_map.png",
         "model/specular_map.png",
         "model/diffuse_map.png");
