@@ -25,7 +25,6 @@ private:
         const Triangle &texture_triangle,
         float illumination);
     void draw_line(int x0, int y0, int x1, int y1, const sf::Color &color);
-    FloatVector world_to_screen(const FloatVector &vec);
 
 public:
     Renderer(
