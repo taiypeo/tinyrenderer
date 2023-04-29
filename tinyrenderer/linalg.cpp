@@ -5,9 +5,14 @@ Matrix::Matrix(size_t rows, size_t cols)
     mat = std::vector<std::vector<float>>(rows, std::vector<float>(cols, 0.f));
 }
 
-std::vector<float> &Matrix::operator[](size_t idx)
+Matrix::Matrix(const FloatVector &vec) : Matrix(VectorComponent::W + 1, 1)
 {
-    return mat[idx];
+    for (size_t i = VectorComponent::X; i <= VectorComponent::Z; ++i)
+    {
+        mat[i][0] = vec.at(i);
+    }
+
+    mat[VectorComponent::W][0] = 1.f;
 }
 
 Matrix Matrix::operator*(const Matrix &other) const
@@ -34,6 +39,16 @@ Matrix Matrix::operator*(const Matrix &other) const
     }
 
     return result;
+}
+
+std::vector<float> &Matrix::operator[](size_t idx)
+{
+    return mat[idx];
+}
+
+const std::vector<float> &Matrix::at(size_t idx) const
+{
+    return mat[idx];
 }
 
 Matrix Matrix::T() const
@@ -67,6 +82,22 @@ Matrix Matrix::identity(size_t size)
     for (size_t i = 0; i < size; ++i)
     {
         result[i][i] = 1.f;
+    }
+
+    return result;
+}
+
+FloatVector Matrix::to_vector() const
+{
+    if (n_cols() != 1 || n_rows() != VectorComponent::W + 1)
+    {
+        throw std::runtime_error("Can only transform a 4x1 matrix into a vector");
+    }
+
+    FloatVector result;
+    for (size_t i = VectorComponent::X; i <= VectorComponent::W; ++i)
+    {
+        result[i] = mat[i][0] / mat[VectorComponent::W][0];
     }
 
     return result;

@@ -19,6 +19,6 @@ std::pair<IntVector, IntVector> Triangle::bounding_box(int screen_width, int scr
 
 float Triangle::scale_barycentric(size_t component_idx, const FloatVector &barycentric) const
 {
-    const FloatVector stacked_components(p0.get(component_idx), p1.get(component_idx), p2.get(component_idx));
+    const FloatVector stacked_components(p0.at(component_idx), p1.at(component_idx), p2.at(component_idx));
     return barycentric * stacked_components;
 }

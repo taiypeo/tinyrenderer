@@ -9,7 +9,8 @@ enum VectorComponent
 {
     X,
     Y,
-    Z
+    Z,
+    W
 };
 
 template <typename T>
@@ -70,7 +71,7 @@ struct Vector
         }
     }
 
-    const T get(size_t idx) const
+    const T at(size_t idx) const
     {
         switch (idx)
         {
@@ -96,11 +97,15 @@ private:
 
 public:
     Matrix(size_t rows, size_t cols);
-    std::vector<float> &operator[](size_t idx);
+    Matrix(const FloatVector &vec);
+
     Matrix operator*(const Matrix &other) const;
+    std::vector<float> &operator[](size_t idx);
+    const std::vector<float> &at(size_t idx) const;
     Matrix T() const;
     size_t n_rows() const;
     size_t n_cols() const;
+    FloatVector to_vector() const;
 
     static Matrix identity(size_t size);
 };
