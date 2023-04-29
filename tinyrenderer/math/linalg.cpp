@@ -173,7 +173,7 @@ Matrix Matrix::look_at(const FloatVector &eye, const FloatVector &center, const 
         Minv[1][i] = y.at(i);
         Minv[2][i] = z.at(i);
 
-        translate[i][3] = -eye.at(i);
+        translate[i][3] = -center.at(i);
     }
 
     return Minv * translate;

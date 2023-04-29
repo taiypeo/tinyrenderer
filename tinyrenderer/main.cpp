@@ -10,7 +10,7 @@
 
 int main()
 {
-    const int screen_width = 1600, screen_height = 1600;
+    const int screen_width = 800, screen_height = 800;
 
     sf::Image screen;
     screen.create(screen_width, screen_height, sf::Color::Black);
@@ -29,7 +29,11 @@ int main()
     const Matrix model_mat = Matrix::identity(4),
                  view_mat = Matrix::look_at(eye, center, up),
                  proj_mat = Matrix::projection((center - eye).norm()),
-                 viewport_mat = Matrix::viewport(0, 0, screen_width, screen_height);
+                 viewport_mat = Matrix::viewport(
+                     screen_width / 8,
+                     screen_height / 8,
+                     screen_width * 3 / 4,
+                     screen_height * 3 / 4);
 
     NormalShader shader(model, model_mat, view_mat, proj_mat, viewport_mat, light);
 
