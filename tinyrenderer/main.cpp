@@ -1,23 +1,30 @@
 #include <SFML/Graphics.hpp>
 
-#include "rendering/camera.hpp"
+#include "math/linalg.hpp"
 #include "rendering/model.hpp"
 #include "rendering/renderer.hpp"
-#include "math/linalg.hpp"
+#include "rendering/shader.hpp"
 
 int main()
 {
+    const int screen_width = 800, screen_height = 800;
+
     sf::Image screen;
     screen.create(800, 800, sf::Color::Black);
 
     Model model("model/head.obj", "model/texture.png");
 
-    Camera camera(
-        FloatVector(1.f, 1.f, 3.f),
-        FloatVector(0.f, 0.f, 0.f),
-        FloatVector(0.f, 1.f, 0.f));
+    const FloatVector eye(1.f, 1.f, 3.f), center(0.f, 0.f, 0.f), up(0.f, 1.f, 0.f), light(1.f, -1.f, -1.f);
 
-    Renderer renderer(screen, model, camera, FloatVector(1.f, -1.f, -1.f));
+    const Matrix model_mat = Matrix::identity(4),
+                 view_mat = Matrix::look_at(eye, center, up),
+                 proj_mat = Matrix::projection((center - eye).norm()),
+                 viewport_mat = Matrix::viewport(0, 0, screen_width, screen_height);
+
+    SimpleShader shader(
+        model, model_mat, view_mat, proj_mat, viewport_mat, light);
+
+    Renderer renderer(screen, model, shader, light);
     renderer.draw();
 
     screen.saveToFile("result.png");

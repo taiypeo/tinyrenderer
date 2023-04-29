@@ -9,7 +9,7 @@ set(
     tinyrenderer/main.cpp
     tinyrenderer/rendering/renderer.cpp
     tinyrenderer/rendering/model.cpp
-    tinyrenderer/rendering/camera.cpp
+    tinyrenderer/rendering/shader.cpp
     tinyrenderer/math/triangle.cpp
     tinyrenderer/math/linalg.cpp
 )

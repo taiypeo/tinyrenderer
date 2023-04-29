@@ -6,10 +6,10 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "rendering/camera.hpp"
+#include "math/linalg.hpp"
 #include "math/triangle.hpp"
 #include "rendering/model.hpp"
-#include "math/linalg.hpp"
+#include "rendering/shader.hpp"
 
 class Renderer
 {
@@ -17,21 +17,18 @@ private:
     sf::Image &screen;
     std::vector<std::vector<float>> zbuf;
     Model &model;
-    const Camera &camera;
+    Shader &shader;
     const FloatVector light;
     const int screen_width, screen_height, texture_width, texture_height;
 
-    void draw_triangle(
-        const Triangle &triangle,
-        const Triangle &texture_triangle,
-        float illumination);
+    void draw_triangle(const Triangle &triangle);
     void draw_line(int x0, int y0, int x1, int y1, const sf::Color &color);
 
 public:
     Renderer(
         sf::Image &screen,
         Model &model,
-        const Camera &camera,
+        Shader &shader,
         const FloatVector light);
 
     void draw();

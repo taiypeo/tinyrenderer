@@ -22,3 +22,33 @@ float Triangle::scale_barycentric(size_t component_idx, const FloatVector &baryc
     const FloatVector stacked_components(p0.at(component_idx), p1.at(component_idx), p2.at(component_idx));
     return barycentric * stacked_components;
 }
+
+const FloatVector &Triangle::at(size_t idx) const
+{
+    switch (idx)
+    {
+    case 0:
+        return p0;
+    case 1:
+        return p1;
+    case 2:
+        return p2;
+    default:
+        throw std::runtime_error("Invalid triangle vertex index");
+    }
+}
+
+FloatVector &Triangle::operator[](size_t idx)
+{
+    switch (idx)
+    {
+    case 0:
+        return p0;
+    case 1:
+        return p1;
+    case 2:
+        return p2;
+    default:
+        throw std::runtime_error("Invalid triangle vertex index");
+    }
+}
