@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <stdexcept>
+#include <vector>
 
 enum VectorComponent
 {
@@ -87,5 +88,21 @@ struct Vector
 
 using IntVector = Vector<int>;
 using FloatVector = Vector<float>;
+
+class Matrix
+{
+private:
+    std::vector<std::vector<float>> mat;
+
+public:
+    Matrix(size_t rows, size_t cols);
+    std::vector<float> &operator[](size_t idx);
+    Matrix operator*(const Matrix &other) const;
+    Matrix T() const;
+    size_t n_rows() const;
+    size_t n_cols() const;
+
+    static Matrix identity(size_t size);
+};
 
 #endif
