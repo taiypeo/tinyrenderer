@@ -122,8 +122,8 @@ void Renderer::draw_line(int x0, int y0, int x1, int y1, const sf::Color &color)
 FloatVector Renderer::world_to_screen(const FloatVector &vec)
 {
     return FloatVector(
-        std::floor((vec.x + 1.) * screen_width / 2. + .5),
-        std::floor((vec.y + 1.) * screen_height / 2. + .5),
+        std::floor((vec.x + 1.f) * screen_width / 2.f + .5f),
+        std::floor((vec.y + 1.f) * screen_height / 2.f + .5f),
         vec.z);
 }
 
