@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "shader.hpp"
 
 #include "math/triangle.hpp"
@@ -58,7 +60,7 @@ FloatVector GouraudShader::vertex(size_t face_idx, size_t vertex_idx)
     texture_triangle = model.textures[face_idx];
 
     const FloatVector normal = normals.at(vertex_idx);
-    varying_illumination[vertex_idx] = light * normal / (light.norm() * normal.norm());
+    varying_illumination[vertex_idx] = std::abs(light * normal / (light.norm() * normal.norm()));
 
     return (transformation_mat * Matrix(face.at(vertex_idx))).to_vector();
 }
@@ -66,12 +68,6 @@ FloatVector GouraudShader::vertex(size_t face_idx, size_t vertex_idx)
 bool GouraudShader::fragment(const FloatVector &barycentric, sf::Color &color)
 {
     float illumination = barycentric * varying_illumination;
-    if (illumination <= 0.f)
-    {
-        color = sf::Color::Black;
-        return false;
-    }
-
     const float texture_x = texture_triangle.scale_barycentric(VectorComponent::X, barycentric) * texture_width,
                 texture_y = texture_triangle.scale_barycentric(VectorComponent::Y, barycentric) * texture_height;
 

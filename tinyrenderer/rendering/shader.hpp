@@ -54,8 +54,10 @@ private:
     FloatVector varying_illumination;
 
 public:
-    virtual FloatVector vertex(size_t face, size_t vert);
-    virtual bool fragment(const FloatVector &barycentric, sf::Color &color);
+    using SimpleShader::SimpleShader;
+
+    FloatVector vertex(size_t face, size_t vert);
+    bool fragment(const FloatVector &barycentric, sf::Color &color);
 };
 
 #endif
