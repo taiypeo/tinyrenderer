@@ -5,6 +5,7 @@
 #include <string>
 
 #include "model.hpp"
+#include "vector.hpp"
 
 Model::Model(const std::string &model_filename, const std::string &texture_filename)
 {
@@ -21,8 +22,8 @@ Model::Model(const std::string &model_filename, const std::string &texture_filen
         throw std::runtime_error("Failed to load the model");
     }
 
-    std::vector<Vec3f> vertices, texture_coordinates;
-    std::vector<Vec3i> face_indices, texture_indices;
+    std::vector<FloatVector> vertices, texture_coordinates;
+    std::vector<IntVector> face_indices, texture_indices;
 
     std::string line;
     while (!file.eof())
@@ -37,22 +38,23 @@ Model::Model(const std::string &model_filename, const std::string &texture_filen
         iss >> line_type;
         if (line_type == "v")
         {
-            Vec3f vertex;
+            FloatVector vertex;
             iss >> vertex.x >> vertex.y >> vertex.z;
             vertices.push_back(vertex);
         }
         else if (line_type == "vt")
         {
-            Vec3f texture_coords;
+            FloatVector texture_coords;
             iss >> texture_coords.x >> texture_coords.y >> texture_coords.z;
             texture_coordinates.push_back(texture_coords);
         }
         else if (line_type == "f")
         {
-            Vec3i face, texture;
-            iss >> face.x >> char_discard >> texture.x >> char_discard >> int_discard;
-            iss >> face.y >> char_discard >> texture.y >> char_discard >> int_discard;
-            iss >> face.z >> char_discard >> texture.z >> char_discard >> int_discard;
+            IntVector face, texture;
+            for (size_t component = VectorComponent::X; component <= VectorComponent::Z; ++component)
+            {
+                iss >> face[component] >> char_discard >> texture[component] >> char_discard >> int_discard;
+            }
 
             face_indices.push_back(face);
             texture_indices.push_back(texture);

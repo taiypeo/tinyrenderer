@@ -5,7 +5,6 @@
 
 #include <vector>
 
-#include "../third-party/geometry.h"
 #include "triangle.hpp"
 
 struct Model

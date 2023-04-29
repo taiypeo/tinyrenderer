@@ -5,40 +5,40 @@
 
 #include "renderer.hpp"
 
-Vec3f barycentric_coords(const Vec3f &p, const Triangle &triangle)
+FloatVector barycentric_coords(const FloatVector &p, const Triangle &triangle)
 {
-    const Vec3f p10 = triangle.p1 - triangle.p0,
-                p20 = triangle.p2 - triangle.p0,
-                p0p = triangle.p0 - p;
+    const FloatVector p10 = triangle.p1 - triangle.p0,
+                      p20 = triangle.p2 - triangle.p0,
+                      p0p = triangle.p0 - p;
 
-    const Vec3f top_row(p10.x, p20.x, p0p.x),
+    const FloatVector top_row(p10.x, p20.x, p0p.x),
         bottom_row(p10.y, p20.y, p0p.y);
-    const Vec3f cross = top_row ^ bottom_row;
+    const FloatVector cross = top_row ^ bottom_row;
     if (std::abs(cross.z) < 1)
     {
-        return Vec3f(-1, 1, 1);
+        return FloatVector(-1.f, 1.f, 1.f);
     }
 
-    return Vec3f(
+    return FloatVector(
         1 - (cross.x + cross.y) / cross.z, cross.x / cross.z, cross.y / cross.z);
 }
 
-float get_illumination(const Vec3f &light, const Vec3f &p0, const Vec3f &p1)
+float get_illumination(const FloatVector &light, const FloatVector &p0, const FloatVector &p1)
 {
-    const Vec3f normal = p0 ^ p1;
+    const FloatVector normal = p0 ^ p1;
     return light * normal / (light.norm() * normal.norm());
 }
 
 Renderer::Renderer(
     sf::Image &screen_,
     Model &model_,
-    const Vec3f light_) : screen(screen_),
-                          model(model_),
-                          screen_width(screen_.getSize().x),
-                          screen_height(screen_.getSize().y),
-                          texture_width(model_.texture.getSize().x),
-                          texture_height(model_.texture.getSize().y),
-                          light(light_)
+    const FloatVector light_) : screen(screen_),
+                                model(model_),
+                                screen_width(screen_.getSize().x),
+                                screen_height(screen_.getSize().y),
+                                texture_width(model_.texture.getSize().x),
+                                texture_height(model_.texture.getSize().y),
+                                light(light_)
 {
     zbuf = std::vector<std::vector<float>>(
         screen_width,
@@ -55,8 +55,8 @@ void Renderer::draw_triangle(
     {
         for (int y = bbox.first.y; y <= bbox.second.y; ++y)
         {
-            Vec3f pixel(x, y, 0.);
-            const Vec3f barycentric = barycentric_coords(pixel, triangle);
+            FloatVector pixel(x, y, 0.);
+            const FloatVector barycentric = barycentric_coords(pixel, triangle);
             if (barycentric.x < 0 || barycentric.y < 0 || barycentric.z < 0)
             {
                 continue;
@@ -119,11 +119,11 @@ void Renderer::draw_line(int x0, int y0, int x1, int y1, const sf::Color &color)
     }
 }
 
-Vec3f Renderer::world_to_screen(const Vec3f &vec)
+FloatVector Renderer::world_to_screen(const FloatVector &vec)
 {
-    return Vec3f(
-        int((vec.x + 1.) * screen_width / 2. + .5),
-        int((vec.y + 1.) * screen_height / 2. + .5),
+    return FloatVector(
+        std::floor((vec.x + 1.) * screen_width / 2. + .5),
+        std::floor((vec.y + 1.) * screen_height / 2. + .5),
         vec.z);
 }
 

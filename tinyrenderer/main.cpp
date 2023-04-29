@@ -2,6 +2,7 @@
 
 #include "model.hpp"
 #include "renderer.hpp"
+#include "vector.hpp"
 
 int main()
 {
@@ -10,7 +11,7 @@ int main()
 
     Model model("model/head.obj", "model/texture.png");
 
-    const Vec3f light(0, 0, -1);
+    const FloatVector light(0.f, 0.f, -1.f);
 
     Renderer renderer(screen, model, light);
     renderer.draw();
