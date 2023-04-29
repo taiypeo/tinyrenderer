@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(
     SOURCES
     tinyrenderer/main.cpp
-    tinyrenderer/rendering/renderer.cpp
+    tinyrenderer/rendering/draw.cpp
     tinyrenderer/rendering/model.cpp
     tinyrenderer/rendering/shader.cpp
     tinyrenderer/math/triangle.cpp

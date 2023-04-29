@@ -3,7 +3,7 @@
 #include <limits>
 #include <stdexcept>
 
-#include "rendering/renderer.hpp"
+#include "rendering/draw.hpp"
 
 FloatVector barycentric_coords(const FloatVector &p, const Triangle &triangle)
 {
@@ -23,27 +23,14 @@ FloatVector barycentric_coords(const FloatVector &p, const Triangle &triangle)
         1 - (cross.x + cross.y) / cross.z, cross.x / cross.z, cross.y / cross.z);
 }
 
-Renderer::Renderer(
+void draw_triangle(
     sf::Image &screen,
-    Model &model,
-    Shader &shader,
-    const FloatVector light) : screen(screen),
-                               model(model),
-                               screen_width(screen.getSize().x),
-                               screen_height(screen.getSize().y),
-                               texture_width(model.texture.getSize().x),
-                               texture_height(model.texture.getSize().y),
-                               light(light),
-                               shader(shader)
+    const Triangle &triangle,
+    std::vector<std::vector<float>> &zbuf,
+    Shader &shader)
 {
-    zbuf = std::vector<std::vector<float>>(
-        screen_width,
-        std::vector<float>(screen_height, -std::numeric_limits<float>::max()));
-}
-
-void Renderer::draw_triangle(const Triangle &triangle)
-{
-    const auto bbox = triangle.bounding_box(screen_width, screen_height);
+    const auto screen_size = screen.getSize();
+    const auto bbox = triangle.bounding_box(screen_size.x, screen_size.y);
     for (int x = bbox.first.x; x <= bbox.second.x; ++x)
     {
         for (int y = bbox.first.y; y <= bbox.second.y; ++y)
@@ -73,7 +60,13 @@ void Renderer::draw_triangle(const Triangle &triangle)
     }
 }
 
-void Renderer::draw_line(int x0, int y0, int x1, int y1, const sf::Color &color)
+void draw_line(
+    sf::Image &screen,
+    int x0,
+    int y0,
+    int x1,
+    int y1,
+    const sf::Color &color)
 {
     bool transpose = false;
     if (std::abs(x1 - x0) < std::abs(y1 - y0))
@@ -109,20 +102,4 @@ void Renderer::draw_line(int x0, int y0, int x1, int y1, const sf::Color &color)
             two_error -= err_minus_delta;
         }
     }
-}
-
-void Renderer::draw()
-{
-    for (size_t face_idx = 0; face_idx < model.faces.size(); ++face_idx)
-    {
-        Triangle screen_coords;
-        for (size_t vertex_idx = 0; vertex_idx < 3; ++vertex_idx)
-        {
-            screen_coords[vertex_idx] = shader.vertex(face_idx, vertex_idx);
-        }
-
-        draw_triangle(screen_coords);
-    }
-
-    screen.flipVertically();
 }
