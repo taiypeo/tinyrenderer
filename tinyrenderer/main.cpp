@@ -24,7 +24,7 @@ int main()
     const FloatVector eye(1.f, 1.f, 3.f),
         center(0.f, 0.f, 0.f),
         up(0.f, 1.f, 0.f),
-        light(1.f, -1.f, -1.f);
+        light(1.f, 1.f, 1.f);
 
     const Matrix model_mat = Matrix::identity(4),
                  view_mat = Matrix::look_at(eye, center, up),
