@@ -1,9 +1,6 @@
 #include "math/linalg.hpp"
 
-Matrix::Matrix(size_t rows, size_t cols)
-{
-    mat = std::vector<std::vector<float>>(rows, std::vector<float>(cols, 0.f));
-}
+Matrix::Matrix(size_t rows, size_t cols) : mat(rows, std::vector<float>(cols, 0.f)) {}
 
 Matrix::Matrix(const FloatVector &vec) : Matrix(VectorComponent::W + 1, 1)
 {
