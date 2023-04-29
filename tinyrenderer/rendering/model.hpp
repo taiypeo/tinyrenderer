@@ -9,10 +9,12 @@
 
 struct Model
 {
-    std::vector<Triangle> faces, textures;
+    std::vector<Triangle> faces, textures, normals;
     sf::Image texture;
 
-    Model(const std::string &model_filename, const std::string &texture_filename);
+    Model(
+        const std::string &model_filename,
+        const std::string &texture_filename);
 };
 
 #endif

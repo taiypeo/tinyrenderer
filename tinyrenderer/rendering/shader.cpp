@@ -51,3 +51,34 @@ bool SimpleShader::fragment(const FloatVector &barycentric, sf::Color &color)
 
     return false;
 }
+
+FloatVector GouraudShader::vertex(size_t face_idx, size_t vertex_idx)
+{
+    const Triangle face = model.faces[face_idx], normals = model.normals[face_idx];
+    texture_triangle = model.textures[face_idx];
+
+    const FloatVector normal = normals.at(vertex_idx);
+    varying_illumination[vertex_idx] = light * normal / (light.norm() * normal.norm());
+
+    return (transformation_mat * Matrix(face.at(vertex_idx))).to_vector();
+}
+
+bool GouraudShader::fragment(const FloatVector &barycentric, sf::Color &color)
+{
+    float illumination = barycentric * varying_illumination;
+    if (illumination <= 0.f)
+    {
+        color = sf::Color::Black;
+        return false;
+    }
+
+    const float texture_x = texture_triangle.scale_barycentric(VectorComponent::X, barycentric) * texture_width,
+                texture_y = texture_triangle.scale_barycentric(VectorComponent::Y, barycentric) * texture_height;
+
+    color = model.texture.getPixel(texture_x, texture_y);
+    color.r *= illumination;
+    color.g *= illumination;
+    color.b *= illumination;
+
+    return false;
+}

@@ -27,10 +27,12 @@ public:
 class SimpleShader : public Shader
 {
 private:
+    float face_illumination;
+
+protected:
     const FloatVector light;
     const int texture_width, texture_height;
 
-    float face_illumination;
     Triangle texture_triangle;
 
 public:
@@ -42,8 +44,18 @@ public:
         const Matrix &viewport_mat,
         const FloatVector &light);
 
-    FloatVector vertex(size_t face, size_t vert);
-    bool fragment(const FloatVector &barycentric, sf::Color &color);
+    virtual FloatVector vertex(size_t face, size_t vert);
+    virtual bool fragment(const FloatVector &barycentric, sf::Color &color);
+};
+
+class GouraudShader : public SimpleShader
+{
+private:
+    FloatVector varying_illumination;
+
+public:
+    virtual FloatVector vertex(size_t face, size_t vert);
+    virtual bool fragment(const FloatVector &barycentric, sf::Color &color);
 };
 
 #endif
