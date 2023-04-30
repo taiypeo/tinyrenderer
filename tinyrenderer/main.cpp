@@ -21,6 +21,8 @@ int main()
         "model/specular_map.png",
         "model/diffuse_map.png");
 
+    const float ambient_const = 3.f, diffusion_const = 1.2f, specular_const = .6f;
+
     const FloatVector eye(1.f, 1.f, 3.f),
         center(0.f, 0.f, 0.f),
         up(0.f, 1.f, 0.f),
@@ -35,7 +37,16 @@ int main()
                      screen_width * 3 / 4,
                      screen_height * 3 / 4);
 
-    NormalShader shader(model, model_mat, view_mat, proj_mat, viewport_mat, light);
+    NormalShader shader(
+        model,
+        model_mat,
+        view_mat,
+        proj_mat,
+        viewport_mat,
+        light,
+        ambient_const,
+        diffusion_const,
+        specular_const);
 
     std::vector<std::vector<float>> zbuf(
         screen_width,
