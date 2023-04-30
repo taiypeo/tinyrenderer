@@ -114,3 +114,9 @@ FloatVector Model::get_normal(size_t pixel_x, size_t pixel_y) const
         color.g / 255.f * 2.f - 1.f,
         color.b / 255.f * 2.f - 1.f);
 }
+
+float Model::get_specular(size_t pixel_x, size_t pixel_y) const
+{
+    const sf::Color color = normal_map.getPixel(pixel_x, pixel_y);
+    return color.r / 255.f + 5.f; // One channel is enough, since the image is black and white
+}

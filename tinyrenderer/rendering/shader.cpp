@@ -88,9 +88,15 @@ NormalShader::NormalShader(
     const Matrix &view_mat,
     const Matrix &proj_mat,
     const Matrix &viewport_mat,
-    const FloatVector &light) : SimpleShader(model, model_mat, view_mat, proj_mat, viewport_mat, light),
-                                before_viewport(proj_mat * view_mat * model_mat),
-                                before_viewport_tinv(before_viewport.T().inv()) {}
+    const FloatVector &light,
+    float ambient_const,
+    float diffuse_const,
+    float specular_const) : SimpleShader(model, model_mat, view_mat, proj_mat, viewport_mat, light),
+                            before_viewport(proj_mat * view_mat * model_mat),
+                            before_viewport_tinv(before_viewport.T().inv()),
+                            ambient_const(ambient_const),
+                            diffuse_const(diffuse_const),
+                            specular_const(specular_const) {}
 
 FloatVector NormalShader::vertex(size_t face_idx, size_t vertex_idx)
 {
@@ -108,12 +114,16 @@ bool NormalShader::fragment(const FloatVector &barycentric, sf::Color &color)
 
     const FloatVector normal = model.get_normal(texture_x, texture_y),
                       transformed_normal = (before_viewport_tinv * Matrix(normal)).to_vector().normalize(),
-                      transformed_light = (before_viewport * Matrix(light)).to_vector().normalize();
+                      transformed_light = (before_viewport * Matrix(light)).to_vector().normalize(),
+                      scaled_normal = transformed_normal * (transformed_light * transformed_normal * 2.f),
+                      reflected = (scaled_normal - transformed_light).normalize();
 
-    const float illumination = std::abs(transformed_normal * transformed_light);
-    color.r *= illumination;
-    color.g *= illumination;
-    color.b *= illumination;
+    const float diffuse = std::max(0.f, transformed_normal * transformed_light),
+                specular = std::pow(std::max(0.f, reflected.z), model.get_specular(texture_x, texture_y)),
+                illumination = diffuse_const * diffuse + specular_const * specular;
+    color.r = std::min(255.f, ambient_const + illumination * color.r);
+    color.g = std::min(255.f, ambient_const + illumination * color.g);
+    color.b = std::min(255.f, ambient_const + illumination * color.b);
 
     return false;
 }

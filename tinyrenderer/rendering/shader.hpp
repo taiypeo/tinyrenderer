@@ -64,6 +64,7 @@ class NormalShader : public SimpleShader
 {
 private:
     Matrix before_viewport, before_viewport_tinv;
+    const float ambient_const, diffuse_const, specular_const;
 
 public:
     NormalShader(
@@ -72,7 +73,10 @@ public:
         const Matrix &view_mat,
         const Matrix &proj_mat,
         const Matrix &viewport_mat,
-        const FloatVector &light);
+        const FloatVector &light,
+        float ambient_const = 3.f,
+        float diffuse_const = 1.2f,
+        float specular_const = .6f);
 
     FloatVector vertex(size_t face_idx, size_t vertex_idx);
     bool fragment(const FloatVector &barycentric, sf::Color &color);
